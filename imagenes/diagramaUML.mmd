@@ -1,0 +1,28 @@
+classDiagram
+    class Usuario {
+        +correo: string
+        +contrasena: varchar
+    }
+    class Estudiante {
+        -id: int
+        -nombre: string
+        -email: string
+        -edad: string
+    }
+
+    class Profesor {
+        -id: int
+        -nombre: string
+        -especialidad: string
+    }
+
+    class Curso {
+        -id: int
+        -nombre: string
+        -duracion: int
+        -profesor: string
+    }
+    
+    Usuario <|-- Estudiante : hereda
+    Usuario <|-- Profesor : hereda
+    Usuario --> Curso : tiene
