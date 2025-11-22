@@ -26,19 +26,19 @@ function cargarTabla(tipo) {
     const data = JSON.parse(localStorage.getItem(tipo)) || [];
     const tbody = document.querySelector(`#${tipo}-table tbody`);
     tbody.innerHTML = '';
-    data.forEach((item, index) => {
+    data.forEach(item => {
         const row = document.createElement('tr');
         Object.values(item).forEach(val => {
             const td = document.createElement('td');
             td.textContent = val;
             row.appendChild(td);
         });
-        // Agregar botón de eliminar
+        // Agregar botón de eliminar con ID
         const tdEliminar = document.createElement('td');
         const btnEliminar = document.createElement('button');
         btnEliminar.textContent = 'Eliminar';
         btnEliminar.className = 'btn btn-danger btn-sm';
-        btnEliminar.onclick = () => eliminarDato(tipo, index);
+        btnEliminar.onclick = () => eliminarDato(tipo, item.id);
         tdEliminar.appendChild(btnEliminar);
         row.appendChild(tdEliminar);
         tbody.appendChild(row);
@@ -56,14 +56,17 @@ function insertarDato(tipo, formData) {
     alert(`${tipo.charAt(0).toUpperCase() + tipo.slice(1)} agregado exitosamente.`);
 }
 
-// Función para eliminar datos
-function eliminarDato(tipo, index) {
+// Función para eliminar datos por ID
+function eliminarDato(tipo, id) {
     if (confirm('¿Estás seguro de que quieres eliminar este registro?')) {
         const data = JSON.parse(localStorage.getItem(tipo)) || [];
-        data.splice(index, 1);
-        localStorage.setItem(tipo, JSON.stringify(data));
-        cargarTabla(tipo);
-        alert(`${tipo.charAt(0).toUpperCase() + tipo.slice(1)} eliminado exitosamente.`);
+        const index = data.findIndex(item => item.id === id);
+        if (index !== -1) {
+            data.splice(index, 1);
+            localStorage.setItem(tipo, JSON.stringify(data));
+            cargarTabla(tipo);
+            alert(`${tipo.charAt(0).toUpperCase() + tipo.slice(1)} eliminado exitosamente.`);
+        }
     }
 }
 
@@ -73,19 +76,19 @@ function filtrarTabla(tipo, query) {
     const filtered = data.filter(item => Object.values(item).some(val => val.toString().toLowerCase().includes(query.toLowerCase())));
     const tbody = document.querySelector(`#${tipo}-table tbody`);
     tbody.innerHTML = '';
-    filtered.forEach((item, index) => {
+    filtered.forEach(item => {
         const row = document.createElement('tr');
         Object.values(item).forEach(val => {
             const td = document.createElement('td');
             td.textContent = val;
             row.appendChild(td);
         });
-        // Agregar botón de eliminar (incluso en filtrado)
+        // Agregar botón de eliminar con ID (incluso en filtrado)
         const tdEliminar = document.createElement('td');
         const btnEliminar = document.createElement('button');
         btnEliminar.textContent = 'Eliminar';
         btnEliminar.className = 'btn btn-danger btn-sm';
-        btnEliminar.onclick = () => eliminarDato(tipo, index);
+        btnEliminar.onclick = () => eliminarDato(tipo, item.id);
         tdEliminar.appendChild(btnEliminar);
         row.appendChild(tdEliminar);
         tbody.appendChild(row);
