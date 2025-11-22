@@ -26,13 +26,21 @@ function cargarTabla(tipo) {
     const data = JSON.parse(localStorage.getItem(tipo)) || [];
     const tbody = document.querySelector(`#${tipo}-table tbody`);
     tbody.innerHTML = '';
-    data.forEach(item => {
+    data.forEach((item, index) => {
         const row = document.createElement('tr');
         Object.values(item).forEach(val => {
             const td = document.createElement('td');
             td.textContent = val;
             row.appendChild(td);
         });
+        // Agregar botón de eliminar
+        const tdEliminar = document.createElement('td');
+        const btnEliminar = document.createElement('button');
+        btnEliminar.textContent = 'Eliminar';
+        btnEliminar.className = 'btn btn-danger btn-sm';
+        btnEliminar.onclick = () => eliminarDato(tipo, index);
+        tdEliminar.appendChild(btnEliminar);
+        row.appendChild(tdEliminar);
         tbody.appendChild(row);
     });
 }
@@ -48,19 +56,38 @@ function insertarDato(tipo, formData) {
     alert(`${tipo.charAt(0).toUpperCase() + tipo.slice(1)} agregado exitosamente.`);
 }
 
+// Función para eliminar datos
+function eliminarDato(tipo, index) {
+    if (confirm('¿Estás seguro de que quieres eliminar este registro?')) {
+        const data = JSON.parse(localStorage.getItem(tipo)) || [];
+        data.splice(index, 1);
+        localStorage.setItem(tipo, JSON.stringify(data));
+        cargarTabla(tipo);
+        alert(`${tipo.charAt(0).toUpperCase() + tipo.slice(1)} eliminado exitosamente.`);
+    }
+}
+
 // Función para filtrar datos
 function filtrarTabla(tipo, query) {
     const data = JSON.parse(localStorage.getItem(tipo)) || [];
     const filtered = data.filter(item => Object.values(item).some(val => val.toString().toLowerCase().includes(query.toLowerCase())));
     const tbody = document.querySelector(`#${tipo}-table tbody`);
     tbody.innerHTML = '';
-    filtered.forEach(item => {
+    filtered.forEach((item, index) => {
         const row = document.createElement('tr');
         Object.values(item).forEach(val => {
             const td = document.createElement('td');
             td.textContent = val;
             row.appendChild(td);
         });
+        // Agregar botón de eliminar (incluso en filtrado)
+        const tdEliminar = document.createElement('td');
+        const btnEliminar = document.createElement('button');
+        btnEliminar.textContent = 'Eliminar';
+        btnEliminar.className = 'btn btn-danger btn-sm';
+        btnEliminar.onclick = () => eliminarDato(tipo, index);
+        tdEliminar.appendChild(btnEliminar);
+        row.appendChild(tdEliminar);
         tbody.appendChild(row);
     });
 }
