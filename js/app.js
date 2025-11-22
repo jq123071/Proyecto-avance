@@ -52,7 +52,10 @@ function insertarDato(tipo, formData) {
     const newItem = { id: newId, ...formData };
     data.push(newItem);
     localStorage.setItem(tipo, JSON.stringify(data));
-    cargarTabla(tipo);
+    // Solo carga la tabla si existe en la página actual (evita error en registro.html)
+    if (document.querySelector(`#${tipo}-table tbody`)) {
+        cargarTabla(tipo);
+    }
     alert(`${tipo.charAt(0).toUpperCase() + tipo.slice(1)} agregado exitosamente.`);
 }
 
