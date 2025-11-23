@@ -2,18 +2,25 @@ classDiagram
     class Usuario {
         +correo: string
         +contrasena: varchar
+        +login(): void
     }
     class Estudiante {
         -id: int
         -nombre: string
         -email: string
-        -edad: string
+        -edad: int
+        +registrar(): void
+        +consultar(): void
+        +eliminar(): void
     }
 
     class Profesor {
         -id: int
         -nombre: string
         -especialidad: string
+        +agregar(): void
+        +consultar(): void
+        +eliminar(): void
     }
 
     class Curso {
@@ -21,8 +28,13 @@ classDiagram
         -nombre: string
         -duracion: int
         -profesor: string
+        +agregar(): void
+        +consultar(): void
+        +eliminar(): void
     }
     
     Usuario <|-- Estudiante : hereda
     Usuario <|-- Profesor : hereda
     Usuario --> Curso : tiene
+    Estudiante --> Curso : inscribe (1..*)
+    Profesor --> Curso : imparte (1..*)
