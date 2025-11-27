@@ -8,18 +8,16 @@ function renderTabla(tipo, data) {
         console.warn(`Tabla #${tipo}-table no encontrada.`);
         return;
     }
-    tbody.innerHTML = '';  // Limpiar tabla
+    tbody.innerHTML = '';
     data.forEach(item => {
         const row = document.createElement('tr');
-        // Mostrar valores (excluyendo 'id' si no quieres mostrarlo; ajusta según necesidad)
+        // Mostrar todos los valores, incluyendo 'id' para coincidir con el HTML
         Object.keys(item).forEach(key => {
-            if (key !== 'id') {  // Opcional: no mostrar 'id' en la tabla
-                const td = document.createElement('td');
-                td.textContent = item[key];
-                row.appendChild(td);
-            }
+            const td = document.createElement('td');
+            td.textContent = item[key];
+            row.appendChild(td);
         });
-        // Agregar botón de eliminar (usa item.id, asumiendo que existe)
+        // Agregar botón de eliminar
         const tdEliminar = document.createElement('td');
         const btnEliminar = document.createElement('button');
         btnEliminar.textContent = 'Eliminar';
