@@ -7,7 +7,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../css/estilos.css">
 </head>
-<body class="bg-light" onload="cargarTabla('cursos')">
+<body class="bg-light" onload="cargarTablaAsync('cursos')">
     <header class="bg-primary text-white text-center py-3">
         <h1>Módulo de Cursos</h1>
     </header>
@@ -36,7 +36,7 @@
             <h2>Lista de Cursos</h2>
             <form action="#" method="get" class="mb-3">
                 <label for="busqueda" class="form-label">Buscar por nombre:</label>
-                <input type="text" id="busqueda" name="busqueda" class="form-control" placeholder="Ingrese nombre del curso" onkeyup="filtrarTabla('cursos', this.value)">
+                <input type="text" id="busqueda" name="busqueda" class="form-control" placeholder="Ingrese nombre del curso" onkeyup="filtrarTablaAsync('cursos', this.value)">
                 <button type="submit" class="btn btn-secondary mt-2">Buscar</button>
             </form>
             <table id="cursos-table" class="table table-striped">
@@ -57,17 +57,28 @@
         <p>&copy; 2025 Sistema Educativo. Todos los derechos reservados.</p>
     </footer>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../js/app.js"></script>
     <script>
-        document.getElementById('form-cursos').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const formData = {
-                nombre: document.getElementById('nombre').value,
-                duracion: parseInt(document.getElementById('duracion').value),
-                profesor: document.getElementById('profesor').value
-            };
-            insertarDato('cursos', formData);
-            this.reset();
+        // Funciones wrapper para async (llaman a app.js)
+        async function cargarTablaAsync(tipo) {
+            await cargarTabla(tipo);
+        }
+        async function filtrarTablaAsync(tipo, query) {
+            await filtrarTabla(tipo, query);
+        }
+        // Event listener para formulario (async)
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('form-cursos').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                const formData = {
+                    nombre: document.getElementById('nombre').value,
+                    duracion: parseInt(document.getElementById('duracion').value),
+                    profesor: document.getElementById('profesor').value
+                };
+                await insertarDato('cursos', formData);  // Espera la inserción
+                this.reset();  // Limpia campos después
+            });
         });
     </script>
 </body>

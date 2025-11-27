@@ -1,99 +1,101 @@
-// Inicializar datos de ejemplo en localStorage si no existen
-if (!localStorage.getItem('estudiantes')) {
-    localStorage.setItem('estudiantes', JSON.stringify([
-        { id: 1, nombre: 'Juan Quirós', correo: 'juan@gmail.com', edad: 24 },
-        { id: 2, nombre: 'Diego Solano', correo: 'diego@gmail.com', edad: 21 },
-        { id: 3, nombre: 'Johanna Moraga', correo: 'johanna@gmail.com', edad: 23 }
-    ]));
-}
-if (!localStorage.getItem('cursos')) {
-    localStorage.setItem('cursos', JSON.stringify([
-        { id: 1, nombre: 'Matemáticas II', duracion: 40, profesor: 'Dr. Pedro Gutierrez' },
-        { id: 2, nombre: 'Programación Web', duracion: 50, profesor: 'Prof. Carlos Gómez' },
-        { id: 3, nombre: 'Calculo IV', duracion: 60, profesor: 'Dra. Elena Saénz' }
-    ]));
-}
-if (!localStorage.getItem('profesores')) {
-    localStorage.setItem('profesores', JSON.stringify([
-        { id: 201, nombre: 'Dr. Pedro Gutierrez', especialidad: 'Matemáticas II' },
-        { id: 202, nombre: 'Prof. Carlos Gómez', especialidad: 'Programación Web' },
-        { id: 203, nombre: 'Dra. Elena Saénz', especialidad: 'Calculo IV' }
-    ]));
-}
+// Configurar Supabase (reemplaza con tus credenciales reales)
+const supabaseUrl = https://jxucinwtreugfehjfgkx.supabase.co; 
+const supabaseKey = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp4dWNpbnd0cmV1Z2ZlaGpmZ2t4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQyMDgwMjEsImV4cCI6MjA3OTc4NDAyMX0.ssWcoQwUzxIGYArzb3porS8JxFecaebZV_SMhnh98nM;
+const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
-// Función para cargar datos en tabla
-function cargarTabla(tipo) {
-    const data = JSON.parse(localStorage.getItem(tipo)) || [];
-    const tbody = document.querySelector(`#${tipo}-table tbody`);
-    tbody.innerHTML = '';
-    data.forEach(item => {
-        const row = document.createElement('tr');
-        Object.values(item).forEach(val => {
-            const td = document.createElement('td');
-            td.textContent = val;
-            row.appendChild(td);
+// Función para cargar datos en tabla (async)
+async function cargarTabla(tipo) {
+    try {
+        const { data, error } = await supabase.from(tipo).select('*');
+        if (error) throw error;
+        const tbody = document.querySelector(`#${tipo}-table tbody`);
+        if (!tbody) return;  // Evita error si no hay tabla
+        tbody.innerHTML = '';
+        data.forEach(item => {
+            const row = document.createElement('tr');
+            Object.values(item).forEach(val => {
+                const td = document.createElement('td');
+                td.textContent = val;
+                row.appendChild(td);
+            });
+            // Agregar botón de eliminar con ID
+            const tdEliminar = document.createElement('td');
+            const btnEliminar = document.createElement('button');
+            btnEliminar.textContent = 'Eliminar';
+            btnEliminar.className = 'btn btn-danger btn-sm';
+            btnEliminar.onclick = () => eliminarDato(tipo, item.id);
+            tdEliminar.appendChild(btnEliminar);
+            row.appendChild(tdEliminar);
+            tbody.appendChild(row);
         });
-        // Agregar botón de eliminar con ID
-        const tdEliminar = document.createElement('td');
-        const btnEliminar = document.createElement('button');
-        btnEliminar.textContent = 'Eliminar';
-        btnEliminar.className = 'btn btn-danger btn-sm';
-        btnEliminar.onclick = () => eliminarDato(tipo, item.id);
-        tdEliminar.appendChild(btnEliminar);
-        row.appendChild(tdEliminar);
-        tbody.appendChild(row);
-    });
-}
-
-// Función para insertar datos
-function insertarDato(tipo, formData) {
-    const data = JSON.parse(localStorage.getItem(tipo)) || [];
-    const newId = data.length > 0 ? Math.max(...data.map(d => d.id)) + 1 : 1;
-    const newItem = { id: newId, ...formData };
-    data.push(newItem);
-    localStorage.setItem(tipo, JSON.stringify(data));
-    // Solo carga la tabla si existe en la página actual (evita error en registro.html)
-    if (document.querySelector(`#${tipo}-table tbody`)) {
-        cargarTabla(tipo);
+    } catch (error) {
+        console.error('Error cargando tabla:', error);
+        alert('Error cargando datos. Revisa la consola.');
     }
-    alert(`${tipo.charAt(0).toUpperCase() + tipo.slice(1)} agregado exitosamente.`);
 }
 
-// Función para eliminar datos por ID
-function eliminarDato(tipo, id) {
+// Función para insertar datos (async)
+async function insertarDato(tipo, formData) {
+    try {
+        const { data, error } = await supabase.from(tipo).insert([formData]).select();
+        if (error) throw error;
+        // Solo carga la tabla si existe en la página actual
+        if (document.querySelector(`#${tipo}-table tbody`)) {
+            await cargarTabla(tipo);
+        }
+        alert(`${tipo.charAt(0).toUpperCase() + tipo.slice(1)} agregado exitosamente.`);
+    } catch (error) {
+        console.error('Error insertando dato:', error);
+        alert('Error al agregar. Revisa la consola.');
+    }
+}
+
+// Función para eliminar datos por ID (async)
+async function eliminarDato(tipo, id) {
     if (confirm('¿Estás seguro de que quieres eliminar este registro?')) {
-        const data = JSON.parse(localStorage.getItem(tipo)) || [];
-        const index = data.findIndex(item => item.id === id);
-        if (index !== -1) {
-            data.splice(index, 1);
-            localStorage.setItem(tipo, JSON.stringify(data));
-            cargarTabla(tipo);
+        try {
+            const { error } = await supabase.from(tipo).delete().eq('id', id);
+            if (error) throw error;
+            await cargarTabla(tipo);
             alert(`${tipo.charAt(0).toUpperCase() + tipo.slice(1)} eliminado exitosamente.`);
+        } catch (error) {
+            console.error('Error eliminando dato:', error);
+            alert('Error al eliminar. Revisa la consola.');
         }
     }
 }
 
-// Función para filtrar datos
-function filtrarTabla(tipo, query) {
-    const data = JSON.parse(localStorage.getItem(tipo)) || [];
-    const filtered = data.filter(item => Object.values(item).some(val => val.toString().toLowerCase().includes(query.toLowerCase())));
-    const tbody = document.querySelector(`#${tipo}-table tbody`);
-    tbody.innerHTML = '';
-    filtered.forEach(item => {
-        const row = document.createElement('tr');
-        Object.values(item).forEach(val => {
-            const td = document.createElement('td');
-            td.textContent = val;
-            row.appendChild(td);
+// Función para filtrar datos (async)
+async function filtrarTabla(tipo, query) {
+    try {
+        let queryBuilder = supabase.from(tipo).select('*');
+        if (query) {
+            // Filtrar por nombre (ajusta si quieres filtrar por otros campos)
+            queryBuilder = queryBuilder.ilike('nombre', `%${query}%`);
+        }
+        const { data, error } = await queryBuilder;
+        if (error) throw error;
+        const tbody = document.querySelector(`#${tipo}-table tbody`);
+        if (!tbody) return;
+        tbody.innerHTML = '';
+        data.forEach(item => {
+            const row = document.createElement('tr');
+            Object.values(item).forEach(val => {
+                const td = document.createElement('td');
+                td.textContent = val;
+                row.appendChild(td);
+            });
+            // Agregar botón de eliminar con ID
+            const tdEliminar = document.createElement('td');
+            const btnEliminar = document.createElement('button');
+            btnEliminar.textContent = 'Eliminar';
+            btnEliminar.className = 'btn btn-danger btn-sm';
+            btnEliminar.onclick = () => eliminarDato(tipo, item.id);
+            tdEliminar.appendChild(btnEliminar);
+            row.appendChild(tdEliminar);
+            tbody.appendChild(row);
         });
-        // Agregar botón de eliminar con ID (incluso en filtrado)
-        const tdEliminar = document.createElement('td');
-        const btnEliminar = document.createElement('button');
-        btnEliminar.textContent = 'Eliminar';
-        btnEliminar.className = 'btn btn-danger btn-sm';
-        btnEliminar.onclick = () => eliminarDato(tipo, item.id);
-        tdEliminar.appendChild(btnEliminar);
-        row.appendChild(tdEliminar);
-        tbody.appendChild(row);
-    });
+    } catch (error) {
+        console.error('Error filtrando datos:', error);
+    }
 }
