@@ -7,19 +7,19 @@ let SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYm
 let SUPABASE_URL = "https://jxucinwtreugfehjfgkx.supabase.co";
 
 // Crear cliente una sola vez
-export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // Función auxiliar para renderizar la tabla (evita duplicación)
 function renderTabla(tipo, data) {
+    console.log(`Renderizando tabla ${tipo} con ${data.length} elementos.`);  // Depuración
     const tbody = document.querySelector(`#${tipo}-table tbody`);
     if (!tbody) {
-        console.warn(`Tabla #${tipo}-table no encontrada.`);
+        console.warn(`Tabla #${tipo}-table no encontrada. Abortando render.`);
         return;
     }
     tbody.innerHTML = '';
     data.forEach(item => {
         const row = document.createElement('tr');
-        // Mostrar todos los valores, incluyendo 'id' para coincidir con el HTML
         Object.keys(item).forEach(key => {
             const td = document.createElement('td');
             td.textContent = item[key];
@@ -35,14 +35,17 @@ function renderTabla(tipo, data) {
         row.appendChild(tdEliminar);
         tbody.appendChild(row);
     });
+    console.log(`Tabla ${tipo} renderizada.`);  // Depuración
 }
 
 // Función para cargar datos en tabla (async)
-export async function cargarTabla(tipo) {
+async function cargarTabla(tipo) {
+    console.log(`Llamando a cargarTabla para ${tipo}.`);  // Depuración
     try {
         const { data, error } = await supabase.from(tipo).select('*');
         if (error) throw error;
-        renderTabla(tipo, data);  // Usar función auxiliar
+        renderTabla(tipo, data);
+        console.log(`cargarTabla completada para ${tipo}.`);  // Depuración
     } catch (error) {
         console.error('Error cargando tabla:', error);
         alert('Error cargando datos. Revisa la consola.');
@@ -50,7 +53,8 @@ export async function cargarTabla(tipo) {
 }
 
 // Función para insertar datos (async)
-export async function insertarDato(tipo, formData) {
+async function insertarDato(tipo, formData) {
+    console.log(`Llamando a insertarDato para ${tipo}.`);  // Depuración
     if (!formData || Object.keys(formData).length === 0) {
         alert('Datos del formulario inválidos.');
         return;
@@ -58,7 +62,6 @@ export async function insertarDato(tipo, formData) {
     try {
         const { data, error } = await supabase.from(tipo).insert([formData]).select();
         if (error) throw error;
-        // Solo recarga la tabla si existe en la página actual
         if (document.querySelector(`#${tipo}-table tbody`)) {
             await cargarTabla(tipo);
         }
@@ -70,7 +73,8 @@ export async function insertarDato(tipo, formData) {
 }
 
 // Función para eliminar datos por ID (async)
-export async function eliminarDato(tipo, id) {
+async function eliminarDato(tipo, id) {
+    console.log(`Llamando a eliminarDato para ${tipo}, ID: ${id}.`);  // Depuración
     if (!id) {
         alert('ID inválido para eliminar.');
         return;
@@ -88,20 +92,25 @@ export async function eliminarDato(tipo, id) {
     }
 }
 
-// Función para filtrar datos (async) - Ahora más genérica
-export async function filtrarTabla(tipo, query, campoFiltro = 'nombre') {  // Parámetro opcional para el campo a filtrar
+// Función para filtrar datos (async)
+async function filtrarTabla(tipo, query, campoFiltro = 'especialidad') {  // Cambiado a 'especialidad' por defecto para profesores
+    console.log(`Llamando a filtrarTabla para ${tipo}.`);  // Depuración
     try {
         let queryBuilder = supabase.from(tipo).select('*');
-        if (query && query.trim()) {  // Filtrar solo si query no está vacío
+        if (query && query.trim()) {
             queryBuilder = queryBuilder.ilike(campoFiltro, `%${query.trim()}%`);
         }
         const { data, error } = await queryBuilder;
         if (error) throw error;
-        renderTabla(tipo, data);  // Usar función auxiliar
+        renderTabla(tipo, data);
     } catch (error) {
         console.error('Error filtrando datos:', error);
         alert('Error filtrando datos. Revisa la consola.');
     }
 }
 
-// Removido: window.onload - Ahora la inicialización se maneja en el HTML específico
+// Asignar funciones a window para que sean globales (accesibles desde el script inline)
+window.cargarTabla = cargarTabla;
+window.insertarDato = insertarDato;
+window.eliminarDato = eliminarDato;
+window.filtrarTabla = filtrarTabla;
