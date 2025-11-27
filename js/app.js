@@ -1,34 +1,42 @@
 // Configurar Supabase (reemplaza con tus credenciales reales)
 import { supabase } from "./js/supabaseClient.js";
 
+// Función auxiliar para renderizar la tabla (evita duplicación)
+function renderTabla(tipo, data) {
+    const tbody = document.querySelector(`#${tipo}-table tbody`);
+    if (!tbody) {
+        console.warn(`Tabla #${tipo}-table no encontrada.`);
+        return;
+    }
+    tbody.innerHTML = '';  // Limpiar tabla
+    data.forEach(item => {
+        const row = document.createElement('tr');
+        // Mostrar valores (excluyendo 'id' si no quieres mostrarlo; ajusta según necesidad)
+        Object.keys(item).forEach(key => {
+            if (key !== 'id') {  // Opcional: no mostrar 'id' en la tabla
+                const td = document.createElement('td');
+                td.textContent = item[key];
+                row.appendChild(td);
+            }
+        });
+        // Agregar botón de eliminar (usa item.id, asumiendo que existe)
+        const tdEliminar = document.createElement('td');
+        const btnEliminar = document.createElement('button');
+        btnEliminar.textContent = 'Eliminar';
+        btnEliminar.className = 'btn btn-danger btn-sm';
+        btnEliminar.onclick = () => eliminarDato(tipo, item.id);
+        tdEliminar.appendChild(btnEliminar);
+        row.appendChild(tdEliminar);
+        tbody.appendChild(row);
+    });
+}
+
 // Función para cargar datos en tabla (async)
 async function cargarTabla(tipo) {
     try {
         const { data, error } = await supabase.from(tipo).select('*');
         if (error) throw error;
-        const tbody = document.querySelector(`#${tipo}-table tbody`);
-        if (!tbody) {
-            console.warn(`Tabla #${tipo}-table no encontrada.`);
-            return;
-        }
-        tbody.innerHTML = '';
-        data.forEach(item => {
-            const row = document.createElement('tr');
-            Object.values(item).forEach(val => {
-                const td = document.createElement('td');
-                td.textContent = val;
-                row.appendChild(td);
-            });
-            // Agregar botón de eliminar con ID
-            const tdEliminar = document.createElement('td');
-            const btnEliminar = document.createElement('button');
-            btnEliminar.textContent = 'Eliminar';
-            btnEliminar.className = 'btn btn-danger btn-sm';
-            btnEliminar.onclick = () => eliminarDato(tipo, item.id);
-            tdEliminar.appendChild(btnEliminar);
-            row.appendChild(tdEliminar);
-            tbody.appendChild(row);
-        });
+        renderTabla(tipo, data);  // Usar función auxiliar
     } catch (error) {
         console.error('Error cargando tabla:', error);
         alert('Error cargando datos. Revisa la consola.');
@@ -37,10 +45,14 @@ async function cargarTabla(tipo) {
 
 // Función para insertar datos (async)
 async function insertarDato(tipo, formData) {
+    if (!formData || Object.keys(formData).length === 0) {
+        alert('Datos del formulario inválidos.');
+        return;
+    }
     try {
         const { data, error } = await supabase.from(tipo).insert([formData]).select();
         if (error) throw error;
-        // Solo carga la tabla si existe en la página actual
+        // Solo recarga la tabla si existe en la página actual
         if (document.querySelector(`#${tipo}-table tbody`)) {
             await cargarTabla(tipo);
         }
@@ -53,6 +65,10 @@ async function insertarDato(tipo, formData) {
 
 // Función para eliminar datos por ID (async)
 async function eliminarDato(tipo, id) {
+    if (!id) {
+        alert('ID inválido para eliminar.');
+        return;
+    }
     if (confirm('¿Estás seguro de que quieres eliminar este registro?')) {
         try {
             const { error } = await supabase.from(tipo).delete().eq('id', id);
@@ -66,43 +82,30 @@ async function eliminarDato(tipo, id) {
     }
 }
 
-// Función para filtrar datos (async)
-async function filtrarTabla(tipo, query) {
+// Función para filtrar datos (async) - Ahora más genérica
+async function filtrarTabla(tipo, query, campoFiltro = 'nombre') {  // Parámetro opcional para el campo a filtrar
     try {
         let queryBuilder = supabase.from(tipo).select('*');
-        if (query) {
-            // Filtrar por nombre (ajusta si quieres filtrar por otros campos)
-            queryBuilder = queryBuilder.ilike('nombre', `%${query}%`);
+        if (query && query.trim()) {  // Filtrar solo si query no está vacío
+            queryBuilder = queryBuilder.ilike(campoFiltro, `%${query.trim()}%`);
         }
         const { data, error } = await queryBuilder;
         if (error) throw error;
-        const tbody = document.querySelector(`#${tipo}-table tbody`);
-        if (!tbody) return;
-        tbody.innerHTML = '';
-        data.forEach(item => {
-            const row = document.createElement('tr');
-            Object.values(item).forEach(val => {
-                const td = document.createElement('td');
-                td.textContent = val;
-                row.appendChild(td);
-            });
-            // Agregar botón de eliminar con ID
-            const tdEliminar = document.createElement('td');
-            const btnEliminar = document.createElement('button');
-            btnEliminar.textContent = 'Eliminar';
-            btnEliminar.className = 'btn btn-danger btn-sm';
-            btnEliminar.onclick = () => eliminarDato(tipo, item.id);
-            tdEliminar.appendChild(btnEliminar);
-            row.appendChild(tdEliminar);
-            tbody.appendChild(row);
-        });
+        renderTabla(tipo, data);  // Usar función auxiliar
     } catch (error) {
         console.error('Error filtrando datos:', error);
+        alert('Error filtrando datos. Revisa la consola.');
     }
 }
 
 // Inicializar al cargar la página (ejemplo para 'usuarios')
 window.onload = () => {
     cargarTabla('usuarios');
-    // Agregar event listeners aquí si es necesario
+    // Ejemplo de event listener para filtrar (ajusta el ID del input según tu HTML)
+    const inputFiltro = document.getElementById('filtro-usuarios');  // Asume un <input id="filtro-usuarios">
+    if (inputFiltro) {
+        inputFiltro.addEventListener('input', (e) => {
+            filtrarTabla('usuarios', e.target.value);
+        });
+    }
 };
