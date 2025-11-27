@@ -1,14 +1,16 @@
 // Configurar Supabase (reemplaza con tus credenciales reales)
 import { supabase } from "./js/supabaseClient.js";
 
-
 // Función para cargar datos en tabla (async)
 async function cargarTabla(tipo) {
     try {
         const { data, error } = await supabase.from(tipo).select('*');
         if (error) throw error;
         const tbody = document.querySelector(`#${tipo}-table tbody`);
-        if (!tbody) return;  // Evita error si no hay tabla
+        if (!tbody) {
+            console.warn(`Tabla #${tipo}-table no encontrada.`);
+            return;
+        }
         tbody.innerHTML = '';
         data.forEach(item => {
             const row = document.createElement('tr');
@@ -98,3 +100,9 @@ async function filtrarTabla(tipo, query) {
         console.error('Error filtrando datos:', error);
     }
 }
+
+// Inicializar al cargar la página (ejemplo para 'usuarios')
+window.onload = () => {
+    cargarTabla('usuarios');
+    // Agregar event listeners aquí si es necesario
+};
