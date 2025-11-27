@@ -104,14 +104,24 @@ async function filtrarTabla(tipo, query, campoFiltro = 'nombre') {  // Parámetr
     }
 }
 
-// Inicializar al cargar la página (ejemplo para 'usuarios')
+// Inicializar al cargar la página (para 'usuarios' y 'profesores')
 window.onload = () => {
+    // Cargar tablas para usuarios y profesores
     cargarTabla('usuarios');
-    // Ejemplo de event listener para filtrar (ajusta el ID del input según tu HTML)
-    const inputFiltro = document.getElementById('filtro-usuarios');  // Asume un <input id="filtro-usuarios">
-    if (inputFiltro) {
-        inputFiltro.addEventListener('input', (e) => {
+    cargarTabla('profesores');
+    
+    // Event listeners para filtros
+    const inputFiltroUsuarios = document.getElementById('filtro-usuarios');
+    if (inputFiltroUsuarios) {
+        inputFiltroUsuarios.addEventListener('input', (e) => {
             filtrarTabla('usuarios', e.target.value);
+        });
+    }
+    
+    const inputFiltroProfesores = document.getElementById('filtro-profesores');
+    if (inputFiltroProfesores) {
+        inputFiltroProfesores.addEventListener('input', (e) => {
+            filtrarTabla('profesores', e.target.value);  // Ajusta 'nombre' si el campo es diferente, ej. 'apellido'
         });
     }
 };
