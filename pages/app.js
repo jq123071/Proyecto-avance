@@ -7,7 +7,7 @@ let SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYm
 let SUPABASE_URL = "https://jxucinwtreugfehjfgkx.supabase.co";
 
 // Crear cliente una sola vez
-const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // Función auxiliar para renderizar la tabla (evita duplicación)
 function renderTabla(tipo, data) {
