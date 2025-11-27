@@ -1,5 +1,5 @@
 // Configurar Supabase (reemplaza con tus credenciales reales)
-import { supabase } from "./supabaseClient.js";
+import { supabase } from "./js/supabaseClient.js";
 
 
 // Función para cargar datos en tabla (async)
