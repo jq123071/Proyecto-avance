@@ -104,24 +104,4 @@ async function filtrarTabla(tipo, query, campoFiltro = 'nombre') {  // Parámetr
     }
 }
 
-// Inicializar al cargar la página (para 'usuarios' y 'profesores')
-window.onload = () => {
-    // Cargar tablas para usuarios y profesores
-    cargarTabla('usuarios');
-    cargarTabla('profesores');
-    
-    // Event listeners para filtros
-    const inputFiltroUsuarios = document.getElementById('filtro-usuarios');
-    if (inputFiltroUsuarios) {
-        inputFiltroUsuarios.addEventListener('input', (e) => {
-            filtrarTabla('usuarios', e.target.value);
-        });
-    }
-    
-    const inputFiltroProfesores = document.getElementById('filtro-profesores');
-    if (inputFiltroProfesores) {
-        inputFiltroProfesores.addEventListener('input', (e) => {
-            filtrarTabla('profesores', e.target.value);  // Ajusta 'nombre' si el campo es diferente, ej. 'apellido'
-        });
-    }
-};
+// Removido: window.onload - Ahora la inicialización se maneja en el HTML específico
