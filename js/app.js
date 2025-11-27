@@ -1,5 +1,5 @@
 // Configurar Supabase (reemplaza con tus credenciales reales)
-import { supabase } from "./supabaseClient.js";
+import { supabase } from "./js/supabaseClient.js";
 
 // Función auxiliar para renderizar la tabla (evita duplicación)
 function renderTabla(tipo, data) {
