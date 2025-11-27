@@ -38,7 +38,7 @@ function renderTabla(tipo, data) {
 }
 
 // Función para cargar datos en tabla (async)
-async function cargarTabla(tipo) {
+export async function cargarTabla(tipo) {
     try {
         const { data, error } = await supabase.from(tipo).select('*');
         if (error) throw error;
@@ -50,7 +50,7 @@ async function cargarTabla(tipo) {
 }
 
 // Función para insertar datos (async)
-async function insertarDato(tipo, formData) {
+export async function insertarDato(tipo, formData) {
     if (!formData || Object.keys(formData).length === 0) {
         alert('Datos del formulario inválidos.');
         return;
@@ -70,7 +70,7 @@ async function insertarDato(tipo, formData) {
 }
 
 // Función para eliminar datos por ID (async)
-async function eliminarDato(tipo, id) {
+export async function eliminarDato(tipo, id) {
     if (!id) {
         alert('ID inválido para eliminar.');
         return;
@@ -89,7 +89,7 @@ async function eliminarDato(tipo, id) {
 }
 
 // Función para filtrar datos (async) - Ahora más genérica
-async function filtrarTabla(tipo, query, campoFiltro = 'nombre') {  // Parámetro opcional para el campo a filtrar
+export async function filtrarTabla(tipo, query, campoFiltro = 'nombre') {  // Parámetro opcional para el campo a filtrar
     try {
         let queryBuilder = supabase.from(tipo).select('*');
         if (query && query.trim()) {  // Filtrar solo si query no está vacío
