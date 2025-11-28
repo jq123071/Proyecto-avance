@@ -57,84 +57,86 @@
     </footer>
 
     <script>
+        // Inicialización de Supabase (debe estar al inicio)
+        const supabaseUrl = "https://jxucinwtreugfehjfgkx.supabase.co";
+        const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp4dWNpbnd0cmV1Z2ZlaGpmZ2t4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQyMDgwMjEsImV4cCI6MjA3OTc4NDAyMX0.ssWcoQwUzxIGYArzb3porS8JxFecaebZV_SMhnh98nM";
+        const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
-    // Función wrapper asíncrona para onload
-    async function cargarTablaAsync(tipo) {
-        await cargarTabla(tipo);
-    }
-
-    // Función para cargar la tabla (actualizada para Supabase, como en la respuesta anterior)
-    async function cargarTabla(tipo) {
-        try {
-            const { data, error } = await supabase.from(tipo).select('*');
-            if (error) throw error;
-            const tbody = document.querySelector(`#${tipo}-table tbody`);
-            tbody.innerHTML = '';
-            data.forEach(item => {
-                const row = document.createElement('tr');
-                Object.values(item).forEach(val => {
-                    const td = document.createElement('td');
-                    td.textContent = val;
-                    row.appendChild(td);
-                });
-                // Botón de eliminar
-                const tdEliminar = document.createElement('td');
-                const btnEliminar = document.createElement('button');
-                btnEliminar.textContent = 'Eliminar';
-                btnEliminar.className = 'btn btn-danger btn-sm';
-                btnEliminar.onclick = () => eliminarDato(tipo, item.id);
-                tdEliminar.appendChild(btnEliminar);
-                row.appendChild(tdEliminar);
-                tbody.appendChild(row);
-            });
-        } catch (err) {
-            console.error('Error cargando tabla:', err);
-            alert('Error al cargar datos.');
+        // Función wrapper asíncrona para onload
+        async function cargarTablaAsync(tipo) {
+            await cargarTabla(tipo);
         }
-    }
 
-    // Función para insertar datos (actualizada para Supabase)
-    async function insertarDato(tipo, formData) {
-        try {
-            const { data, error } = await supabase.from(tipo).insert([formData]).select();
-            if (error) throw error;
-            if (document.querySelector(`#${tipo}-table tbody`)) {
-                await cargarTabla(tipo);
-            }
-            alert(`${tipo.charAt(0).toUpperCase() + tipo.slice(1)} agregado exitosamente.`);
-        } catch (err) {
-            console.error('Error insertando dato:', err);
-            alert('Error al agregar dato.');
-        }
-    }
-
-    // Función para eliminar datos (actualizada para Supabase)
-    async function eliminarDato(tipo, id) {
-        if (confirm('¿Estás seguro de que quieres eliminar este registro?')) {
+        // Función para cargar la tabla
+        async function cargarTabla(tipo) {
             try {
-                const { error } = await supabase.from(tipo).delete().eq('id', id);
+                const { data, error } = await supabase.from(tipo).select('*');
                 if (error) throw error;
-                await cargarTabla(tipo);
-                alert(`${tipo.charAt(0).toUpperCase() + tipo.slice(1)} eliminado exitosamente.`);
+                const tbody = document.querySelector(`#${tipo}-table tbody`);
+                tbody.innerHTML = '';
+                data.forEach(item => {
+                    const row = document.createElement('tr');
+                    Object.values(item).forEach(val => {
+                        const td = document.createElement('td');
+                        td.textContent = val;
+                        row.appendChild(td);
+                    });
+                    // Botón de eliminar
+                    const tdEliminar = document.createElement('td');
+                    const btnEliminar = document.createElement('button');
+                    btnEliminar.textContent = 'Eliminar';
+                    btnEliminar.className = 'btn btn-danger btn-sm';
+                    btnEliminar.onclick = () => eliminarDato(tipo, item.id);
+                    tdEliminar.appendChild(btnEliminar);
+                    row.appendChild(tdEliminar);
+                    tbody.appendChild(row);
+                });
             } catch (err) {
-                console.error('Error eliminando dato:', err);
-                alert('Error al eliminar dato.');
+                console.error('Error cargando tabla:', err);
+                alert('Error al cargar datos. Verifica tu conexión a Supabase.');
             }
         }
-    }
 
+        // Función para insertar datos
+        async function insertarDato(tipo, formData) {
+            try {
+                const { data, error } = await supabase.from(tipo).insert([formData]).select();
+                if (error) throw error;
+                if (document.querySelector(`#${tipo}-table tbody`)) {
+                    await cargarTabla(tipo);
+                }
+                alert(`${tipo.charAt(0).toUpperCase() + tipo.slice(1)} agregado exitosamente.`);
+            } catch (err) {
+                console.error('Error insertando dato:', err);
+                alert('Error al agregar dato.');
+            }
+        }
 
-    // Event listener para el formulario (ahora asíncrono)
-    document.getElementById('profesores-form').addEventListener('submit', async function(event) {
-        event.preventDefault();
-        const formData = {
-            nombre: document.getElementById('nombre').value,
-            especialidad: document.getElementById('especialidad').value
-        };
-        await insertarDato('profesores', formData);
-        this.reset(); // Limpiar formulario
-    });
-</script>
-<script src="./js/app.js"></script>
+        // Función para eliminar datos
+        async function eliminarDato(tipo, id) {
+            if (confirm('¿Estás seguro de que quieres eliminar este registro?')) {
+                try {
+                    const { error } = await supabase.from(tipo).delete().eq('id', id);
+                    if (error) throw error;
+                    await cargarTabla(tipo);
+                    alert(`${tipo.charAt(0).toUpperCase() + tipo.slice(1)} eliminado exitosamente.`);
+                } catch (err) {
+                    console.error('Error eliminando dato:', err);
+                    alert('Error al eliminar dato.');
+                }
+            }
+        }
+
+        // Event listener asíncrono para el formulario
+        document.getElementById('profesores-form').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const formData = {
+                nombre: document.getElementById('nombre').value,
+                especialidad: document.getElementById('especialidad').value
+            };
+            await insertarDato('profesores', formData);
+            this.reset(); // Limpiar formulario
+        });
+    </script>
 </body>
 </html>
