@@ -34,9 +34,15 @@
         </section>
         <section class="bg-white p-4 rounded shadow">
             <h2>Lista de Cursos</h2>
-            <form action="#" method="get" class="mb-3">
-                <label for="busqueda" class="form-label">Buscar por nombre:</label>
-                <input type="text" id="busqueda" name="busqueda" class="form-control" placeholder="Ingrese nombre del curso" onkeyup="filtrarTabla('cursos', this.value)">
+            <form id="form-busqueda" action="#" method="get" class="mb-3">  <!-- Agregado id="form-busqueda" -->
+                <label for="busqueda" class="form-label">Buscar por profesor:</label>  <!-- Cambiado a "Buscar por profesor:" -->
+                <input
+                    type="text"
+                    id="busqueda"
+                    name="busqueda"
+                    class="form-control"
+                    placeholder="Ingrese profesor"
+                />
                 <button type="submit" class="btn btn-secondary mt-2">Buscar</button>
             </form>
             <table id="cursos-table" class="table table-striped">
@@ -128,18 +134,26 @@
             }
         }
 
-        // Función para filtrar la tabla (ajustada para buscar por nombre, columna 1)
+        // Función para filtrar la tabla (adaptada para filtrar por profesor, columna 3, y manejar valor vacío)
         function filtrarTabla(tipo, valor) {
             const tbody = document.querySelector(`#${tipo}-table tbody`);
             const rows = tbody.querySelectorAll("tr");
-            rows.forEach((row) => {
-                const nombre = row.cells[1].textContent.toLowerCase(); // Columna 1: Nombre
-                if (nombre.includes(valor.toLowerCase())) {
+            if (valor.trim() === "") {
+                // Si el valor está vacío, mostrar todas las filas
+                rows.forEach((row) => {
                     row.style.display = "";
-                } else {
-                    row.style.display = "none";
-                }
-            });
+                });
+            } else {
+                // Filtrar por profesor (columna 3, índice 3)
+                rows.forEach((row) => {
+                    const profesor = row.cells[3].textContent.toLowerCase();
+                    if (profesor.includes(valor.toLowerCase())) {
+                        row.style.display = "";
+                    } else {
+                        row.style.display = "none";
+                    }
+                });
+            }
         }
 
         // Event listener para cargar la tabla al cargar la página
@@ -147,7 +161,7 @@
             await cargarTabla("cursos");
         });
 
-        // Event listener asíncrono para el formulario
+        // Event listener asíncrono para el formulario de agregar curso
         document
             .getElementById("form-cursos")
             .addEventListener("submit", async function (event) {
@@ -159,6 +173,15 @@
                 };
                 await insertarDato("cursos", formData);
                 this.reset(); // Limpiar formulario
+            });
+
+        // Event listener para el formulario de búsqueda (nuevo, adaptado de profesores.html)
+        document
+            .getElementById("form-busqueda")
+            .addEventListener("submit", function (event) {
+                event.preventDefault(); // Prevenir el envío por defecto
+                const valor = document.getElementById("busqueda").value;
+                filtrarTabla("cursos", valor);
             });
     </script>
 </body>

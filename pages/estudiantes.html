@@ -69,17 +69,16 @@
       </section>
       <section class="bg-white p-4 rounded shadow">
         <h2>Lista de Estudiantes</h2>
-        <form action="#" method="get" class="mb-3">
+        <form id="form-busqueda" action="#" method="get" class="mb-3">  <!-- Agregado id="form-busqueda" -->
           <label for="busqueda" class="form-label"
-            >Buscar por nombre:</label
+            >Buscar por correo:</label
           >
           <input
             type="text"
             id="busqueda"
             name="busqueda"
             class="form-control"
-            placeholder="Ingrese nombre"
-            onkeyup="filtrarTabla('estudiantes', this.value)"
+            placeholder="Ingrese correo"
           />
           <button type="submit" class="btn btn-secondary mt-2">Buscar</button>
         </form>
@@ -182,18 +181,26 @@
         }
       }
 
-      // Función para filtrar la tabla
+      // Función para filtrar la tabla (mejorada para mostrar todas si el valor está vacío)
       function filtrarTabla(tipo, valor) {
         const tbody = document.querySelector(`#${tipo}-table tbody`);
         const rows = tbody.querySelectorAll("tr");
-        rows.forEach((row) => {
-          const nombre = row.cells[1].textContent.toLowerCase(); // Filtrar por "Nombre" (segunda columna, índice 1)
-          if (nombre.includes(valor.toLowerCase())) {
+        if (valor.trim() === "") {
+          // Si el valor está vacío, mostrar todas las filas
+          rows.forEach((row) => {
             row.style.display = "";
-          } else {
-            row.style.display = "none";
-          }
-        });
+          });
+        } else {
+          // Filtrar por correo (columna 2, índice 2)
+          rows.forEach((row) => {
+            const correo = row.cells[2].textContent.toLowerCase();
+            if (correo.includes(valor.toLowerCase())) {
+              row.style.display = "";
+            } else {
+              row.style.display = "none";
+            }
+          });
+        }
       }
 
       // Event listener para cargar la tabla al cargar la página
@@ -201,7 +208,7 @@
         await cargarTabla("estudiantes");
       });
 
-      // Event listener asíncrono para el formulario
+      // Event listener asíncrono para el formulario de agregar estudiante
       document
         .getElementById("form-estudiantes")
         .addEventListener("submit", async function (event) {
@@ -213,6 +220,15 @@
           };
           await insertarDato("estudiantes", formData);
           this.reset(); // Limpiar formulario
+        });
+
+      // Event listener para el formulario de búsqueda (nuevo)
+      document
+        .getElementById("form-busqueda")
+        .addEventListener("submit", function (event) {
+          event.preventDefault(); // Prevenir el envío por defecto
+          const valor = document.getElementById("busqueda").value;
+          filtrarTabla("estudiantes", valor);
         });
     </script>
   </body>
