@@ -1,91 +1,219 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Estudiantes</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="../css/estilos.css">
-</head>
-<body class="bg-light" onload="cargarTablaAsync('estudiantes')">  <!-- Cambiado a wrapper async -->
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <!-- Supabase se cargará en el script module al final -->
+  </head>
+  <body>
     <header class="bg-primary text-white text-center py-3">
-        <h1>Módulo de Estudiantes</h1>
+      <h1>Módulo de Estudiantes</h1>
     </header>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light justify-content-center">
-        <ul class="navbar-nav">
-            <li class="nav-item"><a class="nav-link" href="login.html">Volver al Login</a></li>
-            <li class="nav-item"><a class="nav-link" href="cursos.html">Cursos</a></li>
-            <li class="nav-item"><a class="nav-link" href="profesores.html">Profesores</a></li>
-            <li class="nav-item"><a class="nav-link" href="registro.html">Registro</a></li>
-        </ul>
+    <nav
+      class="navbar navbar-expand-lg navbar-light bg-light justify-content-center"
+    >
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link" href="login.html">Volver al Login</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="cursos.html">Cursos</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="profesores.html">Profesores</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="registro.html">Registro</a>
+        </li>
+      </ul>
     </nav>
     <main class="container mt-4">
-        <section class="bg-white p-4 rounded shadow mb-4">
-            <h2>Agregar Estudiante</h2>
-            <form id="form-estudiantes" class="d-flex flex-column">
-                <label for="nombre" class="form-label">Nombre:</label>
-                <input type="text" id="nombre" name="nombre" required minlength="3" class="form-control mb-3">
-                <label for="correo" class="form-label">Correo:</label>
-                <input type="email" id="correo" name="correo" required class="form-control mb-3">
-                <label for="edad" class="form-label">Edad:</label>
-                <input type="number" id="edad" name="edad" required min="18" max="100" class="form-control mb-3">
-                <button type="submit" class="btn btn-success">Agregar</button>
-            </form>
-        </section>
-        <section class="bg-white p-4 rounded shadow">
-            <h2>Lista de Estudiantes</h2>
-            <form id="form-busqueda" class="mb-3">  <!-- Agregado ID para event listener -->
-                <label for="busqueda" class="form-label">Buscar por nombre:</label>
-                <input type="text" id="busqueda" name="busqueda" class="form-control" placeholder="Ingrese nombre" onkeyup="filtrarTablaAsync('estudiantes', this.value)">  <!-- Cambiado a wrapper async -->
-                <button type="submit" class="btn btn-secondary mt-2">Buscar</button>
-            </form>
-            <table id="estudiantes-table" class="table table-striped">
-                <thead class="table-primary">
-                    <tr>
-                        <th>ID</th>
-                        <th>Nombre</th>
-                        <th>Correo</th>
-                        <th>Edad</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
-        </section>
+      <section class="bg-white p-4 rounded shadow mb-4">
+        <h2>Agregar Estudiante</h2>
+        <form id="form-estudiantes" class="d-flex flex-column">
+          <label for="nombre" class="form-label">Nombre:</label>
+          <input
+            type="text"
+            id="nombre"
+            name="nombre"
+            required
+            minlength="3"
+            class="form-control mb-3"
+          />
+          <label for="correo" class="form-label">Correo:</label>
+          <input
+            type="email"
+            id="correo"
+            name="correo"
+            required
+            class="form-control mb-3"
+          />
+          <label for="edad" class="form-label">Edad:</label>
+          <input
+            type="number"
+            id="edad"
+            name="edad"
+            required
+            min="18"
+            max="100"
+            class="form-control mb-3"
+          />
+          <button type="submit" class="btn btn-success">Agregar</button>
+        </form>
+      </section>
+      <section class="bg-white p-4 rounded shadow">
+        <h2>Lista de Estudiantes</h2>
+        <form action="#" method="get" class="mb-3">
+          <label for="busqueda" class="form-label"
+            >Buscar por nombre:</label
+          >
+          <input
+            type="text"
+            id="busqueda"
+            name="busqueda"
+            class="form-control"
+            placeholder="Ingrese nombre"
+            onkeyup="filtrarTabla('estudiantes', this.value)"
+          />
+          <button type="submit" class="btn btn-secondary mt-2">Buscar</button>
+        </form>
+        <table id="estudiantes-table" class="table table-striped">
+          <thead class="table-primary">
+            <tr>
+              <th>ID</th>
+              <th>Nombre</th>
+              <th>Correo</th>
+              <th>Edad</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </section>
     </main>
     <footer class="text-center mt-4 text-muted">
-        <p>&copy; 2024 Sistema Educativo. Todos los derechos reservados.</p>  <!-- Corregido a 2024 si es actual -->
+      <p>&copy; 2025 Sistema Educativo. Todos los derechos reservados.</p>
     </footer>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Removido el script de Supabase JS, ya que app.js lo importa -->
-    <script src="../js/app.js"></script>
-    <script>
-        // Funciones wrapper para async (ya definidas, pero aseguramos consistencia)
-        async function cargarTablaAsync(tipo) {
+
+    <script type="module">
+      // Importar Supabase desde esm.sh (compatible con módulos ES)
+      import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+      // Inicialización de Supabase
+      const supabaseUrl = "https://jxucinwtreugfehjfgkx.supabase.co";
+      const supabaseKey =
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp4dWNpbnd0cmV1Z2ZlaGpmZ2t4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQyMDgwMjEsImV4cCI6MjA3OTc4NDAyMX0.ssWcoQwUzxIGYArzb3porS8JxFecaebZV_SMhnh98nM";
+      const supabase = createClient(supabaseUrl, supabaseKey);
+
+      // Función para cargar la tabla
+      async function cargarTabla(tipo) {
+        try {
+          const { data, error } = await supabase.from(tipo).select("*");
+          if (error) throw error;
+          const tbody = document.querySelector(`#${tipo}-table tbody`);
+          tbody.innerHTML = "";
+          data.forEach((item) => {
+            const row = document.createElement("tr");
+            Object.values(item).forEach((val) => {
+              const td = document.createElement("td");
+              td.textContent = val;
+              row.appendChild(td);
+            });
+            // Botón de eliminar
+            const tdEliminar = document.createElement("td");
+            const btnEliminar = document.createElement("button");
+            btnEliminar.textContent = "Eliminar";
+            btnEliminar.className = "btn btn-danger btn-sm";
+            btnEliminar.onclick = () => eliminarDato(tipo, item.id);
+            tdEliminar.appendChild(btnEliminar);
+            row.appendChild(tdEliminar);
+            tbody.appendChild(row);
+          });
+        } catch (err) {
+          console.error("Error cargando tabla:", err);
+          alert("Error al cargar datos. Verifica tu conexión a Supabase.");
+        }
+      }
+
+      // Función para insertar datos
+      async function insertarDato(tipo, formData) {
+        try {
+          const { data, error } = await supabase
+            .from(tipo)
+            .insert([formData])
+            .select();
+          if (error) throw error;
+          if (document.querySelector(`#${tipo}-table tbody`)) {
             await cargarTabla(tipo);
+          }
+          alert(
+            `${
+              tipo.charAt(0).toUpperCase() + tipo.slice(1)
+            } agregado exitosamente.`
+          );
+        } catch (err) {
+          console.error("Error insertando dato:", err);
+          alert("Error al agregar dato.");
         }
-        async function filtrarTablaAsync(tipo, query) {
-            await filtrarTabla(tipo, query);
+      }
+
+      // Función para eliminar datos
+      async function eliminarDato(tipo, id) {
+        if (confirm("¿Estás seguro de que quieres eliminar este registro?")) {
+          try {
+            const { error } = await supabase.from(tipo).delete().eq("id", id);
+            if (error) throw error;
+            await cargarTabla(tipo);
+            alert(
+              `${
+                tipo.charAt(0).toUpperCase() + tipo.slice(1)
+              } eliminado exitosamente.`
+            );
+          } catch (err) {
+            console.error("Error eliminando dato:", err);
+            alert("Error al eliminar dato.");
+          }
         }
-        // Event listener para formulario de agregar
-        document.addEventListener('DOMContentLoaded', function() {
-            document.getElementById('form-estudiantes').addEventListener('submit', async function(e) {
-                e.preventDefault();
-                const formData = {
-                    nombre: document.getElementById('nombre').value,
-                    correo: document.getElementById('correo').value,
-                    edad: parseInt(document.getElementById('edad').value)
-                };
-                await insertarDato('estudiantes', formData);
-                this.reset();
-            });
-            // Event listener para formulario de búsqueda (previene recarga y filtra)
-            document.getElementById('form-busqueda').addEventListener('submit', async function(e) {
-                e.preventDefault();
-                const query = document.getElementById('busqueda').value;
-                await filtrarTablaAsync('estudiantes', query);
-            });
+      }
+
+      // Función para filtrar la tabla
+      function filtrarTabla(tipo, valor) {
+        const tbody = document.querySelector(`#${tipo}-table tbody`);
+        const rows = tbody.querySelectorAll("tr");
+        rows.forEach((row) => {
+          const nombre = row.cells[1].textContent.toLowerCase(); // Filtrar por "Nombre" (segunda columna, índice 1)
+          if (nombre.includes(valor.toLowerCase())) {
+            row.style.display = "";
+          } else {
+            row.style.display = "none";
+          }
+        });
+      }
+
+      // Event listener para cargar la tabla al cargar la página
+      window.addEventListener("load", async function () {
+        await cargarTabla("estudiantes");
+      });
+
+      // Event listener asíncrono para el formulario
+      document
+        .getElementById("form-estudiantes")
+        .addEventListener("submit", async function (event) {
+          event.preventDefault();
+          const formData = {
+            nombre: document.getElementById("nombre").value,
+            correo: document.getElementById("correo").value,
+            edad: parseInt(document.getElementById("edad").value),
+          };
+          await insertarDato("estudiantes", formData);
+          this.reset(); // Limpiar formulario
         });
     </script>
-</body>
+  </body>
 </html>
