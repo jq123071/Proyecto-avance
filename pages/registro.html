@@ -44,9 +44,9 @@
     </footer>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
-    <!-- Script adaptado de estudiantes.html para manejar Supabase -->
+    
     <script type="module">
-      // Importar Supabase desde esm.sh (compatible con módulos ES)
+      // Importar Supabase desde esm.sh
       import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
       // Inicialización de Supabase
@@ -55,7 +55,7 @@
         "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp4dWNpbnd0cmV1Z2ZlaGpmZ2t4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQyMDgwMjEsImV4cCI6MjA3OTc4NDAyMX0.ssWcoQwUzxIGYArzb3porS8JxFecaebZV_SMhnh98nM";
       const supabase = createClient(supabaseUrl, supabaseKey);
 
-      // Función para insertar datos (adaptada de estudiantes.html)
+      // Función para insertar datos
       async function insertarDato(tipo, formData) {
         try {
           const { data, error } = await supabase

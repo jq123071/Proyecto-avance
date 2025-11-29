@@ -69,7 +69,7 @@
       </section>
       <section class="bg-white p-4 rounded shadow">
         <h2>Lista de Estudiantes</h2>
-        <form id="form-busqueda" action="#" method="get" class="mb-3">  <!-- Agregado id="form-busqueda" -->
+        <form id="form-busqueda" action="#" method="get" class="mb-3"> 
           <label for="busqueda" class="form-label"
             >Buscar por correo:</label
           >
@@ -181,7 +181,7 @@
         }
       }
 
-      // Función para filtrar la tabla (mejorada para mostrar todas si el valor está vacío)
+      // Función para filtrar la tabla
       function filtrarTabla(tipo, valor) {
         const tbody = document.querySelector(`#${tipo}-table tbody`);
         const rows = tbody.querySelectorAll("tr");
@@ -191,7 +191,7 @@
             row.style.display = "";
           });
         } else {
-          // Filtrar por correo (columna 2, índice 2)
+          // Filtrar por correo 
           rows.forEach((row) => {
             const correo = row.cells[2].textContent.toLowerCase();
             if (correo.includes(valor.toLowerCase())) {
