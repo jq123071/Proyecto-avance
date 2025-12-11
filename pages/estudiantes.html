@@ -95,9 +95,34 @@
           <tbody></tbody>
         </table>
       </section>
+      <!-- NUEVO: Modal para editar estudiante -->
+      <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="editModalLabel">Editar Estudiante</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <form id="form-edit-estudiantes" class="d-flex flex-column">
+                <label for="edit-nombre" class="form-label">Nombre:</label>
+                <input type="text" id="edit-nombre" name="nombre" required minlength="3" class="form-control mb-3">
+                <label for="edit-correo" class="form-label">Correo:</label>
+                <input type="email" id="edit-correo" name="correo" required class="form-control mb-3">
+                <label for="edit-edad" class="form-label">Edad:</label>
+                <input type="number" id="edit-edad" name="edad" required min="18" max="100" class="form-control mb-3">
+              </form>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+              <button type="button" class="btn btn-primary" id="btn-guardar-edit">Guardar Cambios</button>
+            </div>
+          </div>
+        </div>
+      </div>
     </main>
     <footer class="text-center mt-4 text-muted">
-      <p>&copy; 2025 Sistema Educativo. Todos los derechos reservados.</p>
+      <p>&copy; 2024 Sistema Educativo. Todos los derechos reservados.</p>
     </footer>
 
     <script type="module">
@@ -124,14 +149,20 @@
               td.textContent = val;
               row.appendChild(td);
             });
-            // Botón de eliminar
-            const tdEliminar = document.createElement("td");
+            // NUEVO: Botón de editar
+            const tdEditar = document.createElement("td");
+            const btnEditar = document.createElement("button");
+            btnEditar.textContent = "Editar";
+            btnEditar.className = "btn btn-warning btn-sm me-2";
+            btnEditar.onclick = () => abrirModalEditar(tipo, item);
+            tdEditar.appendChild(btnEditar);
+            // Botón de eliminar (existente)
             const btnEliminar = document.createElement("button");
             btnEliminar.textContent = "Eliminar";
             btnEliminar.className = "btn btn-danger btn-sm";
             btnEliminar.onclick = () => eliminarDato(tipo, item.id);
-            tdEliminar.appendChild(btnEliminar);
-            row.appendChild(tdEliminar);
+            tdEditar.appendChild(btnEliminar);
+            row.appendChild(tdEditar);
             tbody.appendChild(row);
           });
         } catch (err) {
@@ -140,7 +171,7 @@
         }
       }
 
-      // Función para insertar datos
+      // Función para insertar datos (sin cambios)
       async function insertarDato(tipo, formData) {
         try {
           const { data, error } = await supabase
@@ -162,7 +193,7 @@
         }
       }
 
-      // Función para eliminar datos
+      // Función para eliminar datos (sin cambios)
       async function eliminarDato(tipo, id) {
         if (confirm("¿Estás seguro de que quieres eliminar este registro?")) {
           try {
@@ -181,17 +212,15 @@
         }
       }
 
-      // Función para filtrar la tabla
+      // Función para filtrar la tabla (sin cambios)
       function filtrarTabla(tipo, valor) {
         const tbody = document.querySelector(`#${tipo}-table tbody`);
         const rows = tbody.querySelectorAll("tr");
         if (valor.trim() === "") {
-          // Si el valor está vacío, mostrar todas las filas
           rows.forEach((row) => {
             row.style.display = "";
           });
         } else {
-          // Filtrar por correo 
           rows.forEach((row) => {
             const correo = row.cells[2].textContent.toLowerCase();
             if (correo.includes(valor.toLowerCase())) {
@@ -203,12 +232,44 @@
         }
       }
 
-      // Event listener para cargar la tabla al cargar la página
+      // NUEVO: Función para abrir modal y prellenar datos
+      function abrirModalEditar(tipo, item) {
+        document.getElementById('edit-nombre').value = item.nombre;
+        document.getElementById('edit-correo').value = item.correo;
+        document.getElementById('edit-edad').value = item.edad;
+        // Mostrar modal
+        const modal = new bootstrap.Modal(document.getElementById('editModal'));
+        modal.show();
+        // Event listener para guardar (único por modal)
+        document.getElementById('btn-guardar-edit').onclick = async () => {
+          const formData = {
+            nombre: document.getElementById('edit-nombre').value,
+            correo: document.getElementById('edit-correo').value,
+            edad: parseInt(document.getElementById('edit-edad').value),
+          };
+          await editarDato(tipo, item.id, formData);
+          modal.hide();
+        };
+      }
+
+      // NUEVO: Función para editar datos
+      async function editarDato(tipo, id, formData) {
+        try {
+          const { error } = await supabase.from(tipo).update(formData).eq("id", id);
+          if (error) throw error;
+          await cargarTabla(tipo);
+          alert(`${tipo.charAt(0).toUpperCase() + tipo.slice(1)} actualizado exitosamente.`);
+        } catch (err) {
+          console.error("Error editando dato:", err);
+          alert("Error al editar dato.");
+        }
+      }
+
+      // Event listeners (sin cambios, excepto agregar Bootstrap JS)
       window.addEventListener("load", async function () {
         await cargarTabla("estudiantes");
       });
 
-      // Event listener asíncrono para el formulario de agregar estudiante
       document
         .getElementById("form-estudiantes")
         .addEventListener("submit", async function (event) {
@@ -219,17 +280,18 @@
             edad: parseInt(document.getElementById("edad").value),
           };
           await insertarDato("estudiantes", formData);
-          this.reset(); // Limpiar formulario
+          this.reset();
         });
 
-      // Event listener para el formulario de búsqueda (nuevo)
       document
         .getElementById("form-busqueda")
         .addEventListener("submit", function (event) {
-          event.preventDefault(); // Prevenir el envío por defecto
+          event.preventDefault();
           const valor = document.getElementById("busqueda").value;
           filtrarTabla("estudiantes", valor);
         });
     </script>
+    <!-- Agregar Bootstrap JS para modales -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   </body>
 </html>

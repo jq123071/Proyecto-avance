@@ -1,40 +1,42 @@
 classDiagram
-    class Usuario {
-        +correo: string
-        +contrasena: varchar
-        +login(): void
-    }
     class Estudiante {
-        -id: int
-        -nombre: string
-        -email: string
-        -edad: int
-        +registrar(): void
-        +consultar(): void
+        +id: int
+        +nombre: string
+        +correo: string
+        +edad: int
+        +crear(): void
+        +leer(): void
+        +actualizar(): void
         +eliminar(): void
     }
-
     class Profesor {
-        -id: int
-        -nombre: string
-        -especialidad: string
-        +agregar(): void
-        +consultar(): void
+        +id: int
+        +nombre: string
+        +especialidad: string
+        +crear(): void
+        +leer(): void
+        +actualizar(): void
         +eliminar(): void
     }
-
     class Curso {
-        -id: int
-        -nombre: string
-        -duracion: int
-        -profesor: string
-        +agregar(): void
-        +consultar(): void
+        +id: int
+        +nombre: string
+        +duracion: int
+        +profesor: string
+        +crear(): void
+        +leer(): void
+        +actualizar(): void
         +eliminar(): void
+    }
+    class Registro {
+        +id: int
+        +id_usuario: int
+        +id_curso: int
+        +fecha_registro: date
+        +registrar(): void
     }
     
-    Usuario <|-- Estudiante : hereda
-    Usuario <|-- Profesor : hereda
-    Usuario --> Curso : tiene
-    Estudiante --> Curso : inscribe (1..*)
+    Estudiante --> Registro : registra (1..*)
+    Registro --> Curso : asocia (*..1)
+    Profesor --> Registro : gestiona (1..*)
     Profesor --> Curso : imparte (1..*)
