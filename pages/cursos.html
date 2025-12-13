@@ -58,7 +58,7 @@
                 <tbody></tbody>
             </table>
         </section>
-        <!-- NUEVO: Modal para editar curso -->
+        <!-- Modal para editar curso -->
         <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -85,7 +85,7 @@
         </div>
     </main>
     <footer class="text-center mt-4 text-muted">
-        <p>&copy; 2024 Sistema Educativo. Todos los derechos reservados.</p>
+        <p>&copy; 2025 Sistema Educativo. Todos los derechos reservados.</p>
     </footer>
 
     <script type="module">
@@ -107,7 +107,7 @@
                         td.textContent = val;
                         row.appendChild(td);
                     });
-                    // NUEVO: Botón de editar
+                    // Botón de editar
                     const tdEditar = document.createElement("td");
                     const btnEditar = document.createElement("button");
                     btnEditar.textContent = "Editar";
@@ -174,7 +174,7 @@
             }
         }
 
-        // NUEVO: Función para abrir modal y prellenar datos
+        // Función para abrir y llenar datos
         function abrirModalEditar(tipo, item) {
             document.getElementById('edit-nombre').value = item.nombre;
             document.getElementById('edit-duracion').value = item.duracion;
@@ -192,7 +192,7 @@
             };
         }
 
-        // NUEVO: Función para editar datos
+        // Función para editar datos
         async function editarDato(tipo, id, formData) {
             try {
                 const { error } = await supabase.from(tipo).update(formData).eq("id", id);
